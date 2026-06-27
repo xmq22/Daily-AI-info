@@ -1,0 +1,48 @@
+name: Daily AI Digest
+
+on:
+  # Scheduled: runs daily at 00:00 UTC = 08:00 Beijing time
+  schedule:
+    - cron: '0 0 * * *'
+
+  # Manual trigger: allows you to test from GitHub UI
+  workflow_dispatch:
+
+  # Also run on push to main to verify setup
+  push:
+    branches: [main]
+
+jobs:
+  build-and-send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'  # caches dependencies for faster runs
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run digest pipeline
+        run: python src/main.py
+        env:
+          # Email configuration (set these in GitHub Secrets)
+          SMTP_HOST: ${{ secrets.SMTP_HOST || 'smtp.qq.com' }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT || '465' }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME || 'AI Daily Digest' }}
+
+          # Optional: LLM enhancement
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_PROVIDER: ${{ secrets.LLM_PROVIDER || 'openai' }}
