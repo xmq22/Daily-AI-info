@@ -16,12 +16,13 @@ logger = logging.getLogger(__name__)
 
 def curate(articles: list[Article]) -> list[Article]:
     """
-    Select the best 2-3 articles for today's digest.
+    Select the best 3-4 articles for today's digest.
 
     Strategy:
     1. Score & rank each article by freshness + source quality
     2. Ensure diversity: at least 1 Chinese article, max 2 per category
-    3. Pick top candidates balancing the above constraints
+    3. Categories: ai_models → ai_apps → interesting
+    4. Pick top candidates balancing the above constraints
     """
     if not articles:
         logger.warning("No articles to curate!")
@@ -82,7 +83,7 @@ def curate(articles: list[Article]) -> list[Article]:
                     break
 
     # ── Sort by category for consistent email layout ──
-    category_order = {"ai_models": 0, "ai_apps": 1, "business": 2}
+    category_order = {"ai_models": 0, "ai_apps": 1, "interesting": 2}
     selected.sort(key=lambda a: category_order.get(a.category, 99))
 
     # ── Optional: LLM-enhanced summaries ──
@@ -110,16 +111,14 @@ def _score_article(article: Article) -> tuple[Article, float]:
     # Authority bonus by source
     authority_bonus = {
         "TechCrunch AI": 20,
-        "TechCrunch Startups": 20,
-        "机器之心": 18,
-        "量子位": 18,
-        "Product Hunt": 15,
         "The Verge": 15,
-        "36氪": 15,
-        "少数派": 12,
         "ArsTechnica": 18,
-        "MIT Technology Review": 20,
+        "机器之心": 18,
+        "Product Hunt": 15,
         "VentureBeat": 16,
+        "量子位": 18,
+        "少数派": 12,
+        "MIT Technology Review": 18,
     }
     score += authority_bonus.get(article.source, 5)
 

@@ -14,13 +14,14 @@ import os
 class Source:
     name: str              # display name
     feed_url: str          # RSS feed URL or API endpoint
-    category: str          # "ai_models" | "ai_apps" | "business"
+    category: str          # "ai_models" | "ai_apps" | "interesting"
     language: str          # "zh" | "en"
     feed_type: str = "rss"
     enabled: bool = True
+    keyword_filter: bool = False  # enable AI keyword filtering for broad feeds
 
 
-# Curated sources — focused on AI, refined by category
+# Curated sources — precisely assigned by category
 SOURCES: list[Source] = [
     # ── AI Models / Foundation Models ──
     Source(
@@ -34,18 +35,14 @@ SOURCES: list[Source] = [
         feed_url="https://www.theverge.com/rss/index.xml",
         category="ai_models",
         language="en",
+        keyword_filter=True,  # broad feed → filter for AI keywords
     ),
     Source(
         name="ArsTechnica",
         feed_url="https://feeds.arstechnica.com/arstechnica/index",
         category="ai_models",
         language="en",
-    ),
-    Source(
-        name="MIT Technology Review",
-        feed_url="https://www.technologyreview.com/feed/",
-        category="ai_models",
-        language="en",
+        keyword_filter=True,  # broad feed → filter for AI keywords
     ),
     Source(
         name="机器之心",
@@ -78,18 +75,12 @@ SOURCES: list[Source] = [
         category="ai_apps",
         language="zh",
     ),
-    # ── Business / Startups / Interesting ──
+    # ── Interesting News (any topic) ──
     Source(
-        name="TechCrunch Startups",
-        feed_url="https://techcrunch.com/tag/startups/feed/",
-        category="business",
+        name="MIT Technology Review",
+        feed_url="https://www.technologyreview.com/feed/",
+        category="interesting",
         language="en",
-    ),
-    Source(
-        name="36氪",
-        feed_url="https://rsshub.app/36kr/news/latest",
-        category="business",
-        language="zh",
     ),
 ]
 
@@ -102,7 +93,7 @@ class Article:
     title: str
     url: str
     source: str            # source display name
-    category: str          # "ai_models" | "ai_apps" | "business"
+    category: str          # "ai_models" | "ai_apps" | "interesting"
     language: str          # "zh" | "en"
     summary: str = ""      # article excerpt or description
     content_snippet: str = ""  # first ~200 chars of body

@@ -17,6 +17,31 @@ from .config import SOURCES, Article
 
 logger = logging.getLogger(__name__)
 
+# AI-related keywords for filtering broad feeds
+_AI_KEYWORDS_EN = [
+    # Models & architectures
+    r"\bAI\b", r"\bLLM\b", r"\bGPT\b", r"\bClaude\b", r"\bGemini\b",
+    r"\btransformer\b", r"\bdiffusion\b", r"\bneural network\b",
+    r"\blanguage model\b", r"\bfoundation model\b", r"\bfrontier model\b",
+    r"\breasoning model\b", r"\bmultimodal\b",
+    # Companies & products
+    r"\bOpenAI\b", r"\bAnthropic\b", r"\bDeepMind\b", r"\bMeta AI\b",
+    r"\bx\.ai\b", r"\bMistral\b", r"\bHugging Face\b",
+    r"\bCopilot\b", r"\bChatGPT\b", r"\bGemini\b", r"\bSora\b",
+    # General AI terms
+    r"\bartificial intelligence\b", r"\bmachine learning\b",
+    r"\bdeep learning\b", r"\breinforcement learning\b",
+    r"\bnatural language processing\b", r"\bNLP\b",
+    r"\bcomputer vision\b", r"\bspeech recognition\b",
+    r"\bgenerative\b", r"\brecommendation system\b",
+    # Chinese terms
+    r"人工智能", r"大模型", r"机器学习", r"深度学习",
+    r"语言模型", r"生成式", r"多模态",
+]
+_AI_KEYWORD_PATTERN = re.compile(
+    "|".join(_AI_KEYWORDS_EN), re.IGNORECASE
+)
+
 # Shared HTTP session
 _session = requests.Session()
 _session.headers.update({
@@ -70,6 +95,10 @@ def _fetch_rss(source) -> list[Article]:
         try:
             article = _rss_entry_to_article(entry, source)
             if article and article.title and article.url:
+                # Keyword filter: skip articles unrelated to AI for broad feeds
+                if source.keyword_filter and not _matches_ai_keywords(article):
+                    logger.debug(f"    filter out (no AI keywords): {article.title[:50]}")
+                    continue
                 articles.append(article)
         except Exception as e:
             logger.debug(f"    skip entry: {e}")
@@ -216,6 +245,19 @@ def _fetch_hackernews(source) -> list[Article]:
             continue
 
     return articles
+
+
+# ── Keyword Filter ─────────────────────────────────────────────────────
+
+
+def _matches_ai_keywords(article) -> bool:
+    """Check if article title or summary contains AI-related keywords.
+
+    Used for broad-coverage feeds (The Verge, ArsTechnica) to ensure
+    articles are actually about AI, not unrelated tech topics.
+    """
+    text = f"{article.title} {article.summary} {article.content_snippet}"
+    return bool(_AI_KEYWORD_PATTERN.search(text))
 
 
 # ── Helpers ────────────────────────────────────────────────────────────
