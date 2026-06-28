@@ -42,12 +42,12 @@
 
             <!-- Category badge -->
             <div style="margin-bottom:8px;">
-              {% if article.category == 'ai' %}
-              <span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff;background:#667eea;">🤖 AI</span>
-              {% elif article.category == 'startups' %}
-              <span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff;background:#f093fb;">🚀 创业</span>
-              {% elif article.category == 'apps' %}
-              <span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff;background:#4facfe;">📱 应用</span>
+              {% if article.category == 'ai_models' %}
+              <span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff;background:#667eea;">🤖 AI 前沿</span>
+              {% elif article.category == 'ai_apps' %}
+              <span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff;background:#4facfe;">⚡ AI 应用</span>
+              {% elif article.category == 'business' %}
+              <span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff;background:#f093fb;">💼 商业</span>
               {% endif %}
               <span style="font-size:11px;color:#999;margin-left:6px;">{{ article.source }}</span>
             </div>

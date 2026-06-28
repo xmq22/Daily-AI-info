@@ -30,7 +30,6 @@ def build_email(articles: list[Article]) -> tuple[str, str]:
     # Date in Beijing time (UTC+8)
     beijing_tz = timezone(timedelta(hours=8))
     today = datetime.now(beijing_tz)
-    date_str = today.strftime("%Y 年 %m 月 %d 日 · %A")
 
     # Weekday in Chinese
     weekday_map = {

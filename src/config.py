@@ -14,69 +14,81 @@ import os
 class Source:
     name: str              # display name
     feed_url: str          # RSS feed URL or API endpoint
-    category: str          # "ai" | "startups" | "apps"
+    category: str          # "ai_models" | "ai_apps" | "business"
     language: str          # "zh" | "en"
-    feed_type: str = "rss"  # "rss" | "hackernews"
+    feed_type: str = "rss"
     enabled: bool = True
 
 
-# Curated sources — 9 high-quality feeds covering AI, Startups & Apps
+# Curated sources — focused on AI, refined by category
 SOURCES: list[Source] = [
-    # ── International / English ──
+    # ── AI Models / Foundation Models ──
     Source(
         name="TechCrunch AI",
         feed_url="https://techcrunch.com/tag/ai/feed/",
-        category="ai",
-        language="en",
-    ),
-    Source(
-        name="TechCrunch Startups",
-        feed_url="https://techcrunch.com/tag/startups/feed/",
-        category="startups",
-        language="en",
-    ),
-    Source(
-        name="Hacker News",
-        feed_url="https://hacker-news.firebaseio.com/v0/",
-        category="startups",
-        language="en",
-        feed_type="hackernews",
-    ),
-    Source(
-        name="Product Hunt",
-        feed_url="https://www.producthunt.com/feed",
-        category="apps",
+        category="ai_models",
         language="en",
     ),
     Source(
         name="The Verge",
         feed_url="https://www.theverge.com/rss/index.xml",
-        category="ai",
+        category="ai_models",
         language="en",
     ),
-    # ── Chinese / 中文 ──
+    Source(
+        name="ArsTechnica",
+        feed_url="https://feeds.arstechnica.com/arstechnica/index",
+        category="ai_models",
+        language="en",
+    ),
+    Source(
+        name="MIT Technology Review",
+        feed_url="https://www.technologyreview.com/feed/",
+        category="ai_models",
+        language="en",
+    ),
     Source(
         name="机器之心",
         feed_url="https://www.jiqizhixin.com/rss",
-        category="ai",
+        category="ai_models",
         language="zh",
+    ),
+    # ── AI Applications / Tools / Agents ──
+    Source(
+        name="Product Hunt",
+        feed_url="https://www.producthunt.com/feed",
+        category="ai_apps",
+        language="en",
+    ),
+    Source(
+        name="VentureBeat",
+        feed_url="https://venturebeat.com/feed/",
+        category="ai_apps",
+        language="en",
     ),
     Source(
         name="量子位",
         feed_url="https://www.qbitai.com/feed",
-        category="ai",
-        language="zh",
-    ),
-    Source(
-        name="36氪",
-        feed_url="https://rsshub.app/36kr/news/latest",
-        category="startups",
+        category="ai_apps",
         language="zh",
     ),
     Source(
         name="少数派",
         feed_url="https://sspai.com/feed",
-        category="apps",
+        category="ai_apps",
+        language="zh",
+    ),
+    # ── Business / Startups / Interesting ──
+    Source(
+        name="TechCrunch Startups",
+        feed_url="https://techcrunch.com/tag/startups/feed/",
+        category="business",
+        language="en",
+    ),
+    Source(
+        name="36氪",
+        feed_url="https://rsshub.app/36kr/news/latest",
+        category="business",
         language="zh",
     ),
 ]
@@ -90,7 +102,7 @@ class Article:
     title: str
     url: str
     source: str            # source display name
-    category: str          # "ai" | "startups" | "apps"
+    category: str          # "ai_models" | "ai_apps" | "business"
     language: str          # "zh" | "en"
     summary: str = ""      # article excerpt or description
     content_snippet: str = ""  # first ~200 chars of body
@@ -103,10 +115,9 @@ class Article:
 @dataclass
 class CurationConfig:
     """How many articles to pick for each category."""
-    target_count: int = 3         # total articles in final digest (2-3)
+    target_count: int = 4         # total articles in final digest (3-4)
     max_per_category: int = 2     # max from same category
     min_zh_count: int = 1         # at least 1 Chinese article
-    hn_top_n: int = 20            # how many top HN stories to evaluate
 
 
 # ── Email Settings (from env vars) ─────────────────────────────────────

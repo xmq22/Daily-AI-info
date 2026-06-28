@@ -82,7 +82,7 @@ def curate(articles: list[Article]) -> list[Article]:
                     break
 
     # ── Sort by category for consistent email layout ──
-    category_order = {"ai": 0, "startups": 1, "apps": 2}
+    category_order = {"ai_models": 0, "ai_apps": 1, "business": 2}
     selected.sort(key=lambda a: category_order.get(a.category, 99))
 
     # ── Optional: LLM-enhanced summaries ──
@@ -113,11 +113,13 @@ def _score_article(article: Article) -> tuple[Article, float]:
         "TechCrunch Startups": 20,
         "机器之心": 18,
         "量子位": 18,
-        "Hacker News": 10,     # raw score appended in summary
         "Product Hunt": 15,
         "The Verge": 15,
         "36氪": 15,
         "少数派": 12,
+        "ArsTechnica": 18,
+        "MIT Technology Review": 20,
+        "VentureBeat": 16,
     }
     score += authority_bonus.get(article.source, 5)
 
@@ -126,18 +128,6 @@ def _score_article(article: Article) -> tuple[Article, float]:
         score += 5  # substantial title
     if article.summary and len(article.summary) > 50:
         score += 5  # has a real summary
-
-    # HN popularity signal
-    if "[HN ▲" in article.summary:
-        try:
-            # Extract score from "[HN ▲123]"
-            import re
-            m = re.search(r"▲(\d+)", article.summary)
-            if m:
-                hn_score = int(m.group(1))
-                score += min(hn_score * 0.5, 20)  # cap at +20
-        except Exception:
-            pass
 
     # Freshness — prefer newer articles (slight random to avoid staleness)
     score += random.uniform(0, 3)
